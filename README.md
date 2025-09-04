@@ -38,7 +38,7 @@ To use the Windows Registry Security Scanner, ensure you have the following:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/windows-registry-security-scanner.git
+   git clone https://github.com/KirlosYounes123/Windows-Registry-Forensics-V1.git
    cd windows-registry-security-scanner
    ```
 
@@ -56,7 +56,7 @@ To use the Windows Registry Security Scanner, ensure you have the following:
 Run the tool with the following command-line arguments:
 
 ```bash
-python scanner.py -r <registry_hive_path> -A <api_key_file> [-D <output_directory>] [-S <signs_directory>]
+python reg.py -r <registry_hive_path> -A <api_key_file> [-D <output_directory>] [-S <signs_directory>]
 ```
 
 ### Arguments
@@ -144,15 +144,6 @@ Contributions are welcome! To contribute:
 5. Open a Pull Request.
 
 Please ensure your code follows PEP 8 guidelines and includes appropriate tests.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
-For questions or issues, please open an issue on the GitHub repository or contact the maintainer at `<your-email>`.
-
----
-
-*Built with security in mind, for a safer Windows environment.*
+For questions or issues, please open an issue on the GitHub repository or contact the maintainer at `kirlosyounes@gmail.com`.
