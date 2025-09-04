@@ -1,1 +1,0 @@
-# Windows-Registry-Forensics-V1
