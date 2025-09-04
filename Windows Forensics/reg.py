@@ -194,38 +194,45 @@ def alarms_for_non_valid_services_paths(Name,result,Code,AlarmsPath):
     return
 
 def service_check(registry_handler,apikey,AlarmsPath,Signs=None):
-    def checking_for_sign(Name,ImagePath,AlarmsPath,Signs=None):
+    def checking_for_sign(Name, ImagePath, AlarmsPath, Signs=None):
         sign = subprocess.run(
             ["powershell", "-Command", rf"Get-AuthenticodeSignature '{ImagePath}' | ConvertTo-Json"],
             capture_output=True,
             text=True,
-            encoding="utf-8",  # add this
-            errors="replace"   # optional: replaces undecodable chars with �
+            encoding="utf-8",
+            errors="replace"
         )
         if not sign.stdout:
             print(f"[!] PowerShell returned nothing for {ImagePath}")
             return None
         if sign.returncode != 0:
-            print(f"[!] PowerShell error")
+            print(f"[!] PowerShell error for {ImagePath}: {sign.stderr}")
             return None
         try:
             data = json.loads(sign.stdout)
         except json.JSONDecodeError:
             print(f"[!] Failed to parse JSON for {ImagePath}")
             return None
+
+        # Check if SignerCertificate is None or missing
+        signer_certificate = data.get("SignerCertificate")
+        publisher = signer_certificate.get("Subject") if signer_certificate else None
+
         result = {
-        "Path": data.get("Path"),
-        "StatusMessage": data.get("StatusMessage"),
-        "Publisher": data.get("SignerCertificate", {}).get("Subject"),
-        "Thumbprint": data.get("SignerCertificate", {}).get("Thumbprint"),
-        "Status" : data.get("Status")
+            "Path": data.get("Path"),
+            "StatusMessage": data.get("StatusMessage"),
+            "Publisher": publisher,
+            "Thumbprint": signer_certificate.get("Thumbprint") if signer_certificate else None,
+            "Status": data.get("Status")
         }
+
         if Signs:
-            writing_sign_and_hashes(result,Signs)
+            writing_sign_and_hashes(result, Signs)
             return result
         if result["Status"] != 0:
-            alarms_for_non_valid_services(Name,result,"S01",AlarmsPath)
+            alarms_for_non_valid_services(Name, result, "S01", AlarmsPath)
             return result
+        return result
         
     path = r"CurrentControlSet\Services" 
     listofsubkeys = registry_handler.root().subkeys()
